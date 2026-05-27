@@ -50,7 +50,7 @@
 set -e
 
 HICLAW_VERSION="${HICLAW_VERSION:-}"
-HICLAW_KNOWN_STABLE_VERSION="v1.1.1"   # fallback if GitHub API is unreachable
+HICLAW_KNOWN_STABLE_VERSION="v1.1.2"   # fallback if GitHub API is unreachable
 
 # Returns 0 (true) if $1 < $2 using semver order; "latest" is treated as greatest
 _ver_lt() {
