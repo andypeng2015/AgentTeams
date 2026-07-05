@@ -5,6 +5,7 @@ Record image-affecting changes to `manager/`, `worker/`, `copaw/`, `openclaw-bas
 ---
 
 - feat(controller): expose low-cardinality AgentTeams controller metrics and optional Helm ServiceMonitor.
+- feat(controller): add Matrix AppService Human SSO identity provisioning with hash-derived Matrix IDs, AppService login, deletion deactivation, and Team admin/member identity resolution from Human status.
 - fix(agent): update file-sharing path guidance for CoPaw and Team Leader agents to use `/root/hiclaw-fs/agents/...` instead of the retired `/root/.hiclaw-worker/...` path.
 - fix(copaw): harden Matrix channel control-command handling, task-thread routing, NO_REPLY suppression, and cancellation noise handling.
 - feat(controller): add OpenKruise Sandbox backend support for Workers via `spec.backendRuntime=sandbox`, including SandboxClaim lifecycle, status watches, CRD schema, and Helm RBAC/env wiring.
@@ -33,3 +34,4 @@ Record image-affecting changes to `manager/`, `worker/`, `copaw/`, `openclaw-bas
 - **Remote Worker applied target auth**: Remote Worker authentication now prefers the status-pinned deployment target and falls back to spec only before first provisioning, so spec target edits do not immediately break the running remote Worker or trust a target before it is applied.
 - **Remote Worker lifecycle boundary**: Workers now record the applied deployment target in status, reject running target changes until the Worker is Stopped, clean up using the applied target, and register remote Pod watches for Worker/Team status updates.
 - **Team Worker CR decoupling**: Worker identity enrichment and Worker REST APIs now resolve `spec.workerMembers` references, and Teams reject sharing the same referenced Worker CR before injecting coordination context.
+- **Matrix AppService integration**: SSO Human Team admins now resolve through the Human identity source, Matrix AppService transaction push routes are wired into the controller registration path, and registration keeps the homeserver-facing controller URL as the endpoint base.
