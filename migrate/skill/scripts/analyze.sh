@@ -134,9 +134,9 @@ CRON_CMDS_FILE="${OUTPUT_DIR}/cron-commands.txt"
 CRON_FILE="${STATE_DIR}/cron/jobs.json"
 if [ -f "${CRON_FILE}" ] && command -v jq &>/dev/null; then
     # Extract text from agentTurn payloads and scan for command references
-    jq -r '.[].payload.agentTurn.parts[]?.text // empty' "${CRON_FILE}" 2>/dev/null | \
+    jq -r '(if type == "object" then (.jobs // []) else . end)[] | .payload.agentTurn.parts[]?.text // empty' "${CRON_FILE}" 2>/dev/null | \
         grep -oE '`[a-zA-Z_][a-zA-Z0-9_-]*`' | tr -d '`' >> "${CRON_CMDS_FILE}" || true
-    jq -r '.[].payload.agentTurn.parts[]?.text // empty' "${CRON_FILE}" 2>/dev/null | \
+    jq -r '(if type == "object" then (.jobs // []) else . end)[] | .payload.agentTurn.parts[]?.text // empty' "${CRON_FILE}" 2>/dev/null | \
         grep -oE '^\s*[a-zA-Z_][a-zA-Z0-9_-]*' | sed 's/^[[:space:]]*//' >> "${CRON_CMDS_FILE}" || true
 fi
 
@@ -249,10 +249,10 @@ fi
 log "Step 7: Generating tool-analysis.json..."
 
 # Build JSON using jq
-APT_JSON=$(printf '%s\n' "${APT_PACKAGES[@]}" 2>/dev/null | jq -R . | jq -s . 2>/dev/null || echo '[]')
-PIP_JSON=$(printf '%s\n' "${PIP_PACKAGES[@]}" 2>/dev/null | jq -R . | jq -s . 2>/dev/null || echo '[]')
-NPM_JSON=$(printf '%s\n' "${NPM_PACKAGES[@]}" 2>/dev/null | jq -R . | jq -s . 2>/dev/null || echo '[]')
-UNKNOWN_JSON=$(printf '%s\n' "${UNKNOWN_BINARIES[@]}" 2>/dev/null | jq -R . | jq -s . 2>/dev/null || echo '[]')
+APT_JSON=$(jq -cn --args '$ARGS.positional' "${APT_PACKAGES[@]}" 2>/dev/null || echo '[]')
+PIP_JSON=$(jq -cn --args '$ARGS.positional' "${PIP_PACKAGES[@]}" 2>/dev/null || echo '[]')
+NPM_JSON=$(jq -cn --args '$ARGS.positional' "${NPM_PACKAGES[@]}" 2>/dev/null || echo '[]')
+UNKNOWN_JSON=$(jq -cn --args '$ARGS.positional' "${UNKNOWN_BINARIES[@]}" 2>/dev/null || echo '[]')
 
 # Count commands per source
 SKILL_COUNT=$(wc -l < "${SKILL_CMDS_FILE}" 2>/dev/null | tr -d ' ')
