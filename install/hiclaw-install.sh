@@ -3119,7 +3119,9 @@ EOF
         if [ "${DOCKER_CMD:-}" = "podman" ]; then
             ensure_podman_socket
         fi
-        CONTAINER_SOCK=$(detect_socket)
+        if [ -z "${CONTAINER_SOCK}" ]; then
+            CONTAINER_SOCK=$(detect_socket)
+        fi
         if [ -n "${CONTAINER_SOCK}" ]; then
             log "$(msg install.socket_detected "${CONTAINER_SOCK}")"
             SOCKET_MOUNT_ARGS="-v ${CONTAINER_SOCK}:/var/run/docker.sock --security-opt label=disable"
